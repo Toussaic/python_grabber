@@ -12,7 +12,7 @@ class Camera:
         self.graph.add_video_input_device(device_id)
         self.graph.add_sample_grabber(self.img_cb)
         self.graph.add_null_render()
-        self.graph.get_input_device().set_format()
+        # self.graph.get_input_device().set_format()
         self.graph.prepare_preview_graph()
         self.graph.run()
 

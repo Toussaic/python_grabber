@@ -112,6 +112,21 @@ class Filter:
         self._in_pins = []
         self.reload_pins()
 
+    @property
+    def instance(self):
+        return self._instance
+    # No setter for this attribute
+
+    @property
+    def name(self):
+        return self._name
+    # No setter for this attribute
+
+    @property
+    def out_pins(self):
+        return self._out_pins
+    # No setter for this attribute
+
     def get_out(self):
         """Get the first out pin."""
         return self._out_pins[0]
@@ -182,14 +197,17 @@ class Filter:
 class VideoInput(Filter):
     """Specific class for Video Filter."""
 
-    def __init__(self, args: Tuple[str, int], capture_builder):
+    def __init__(self, *args, **kwargs):
         """Initialize the filter.
 
         Args:
-            args (TYPE): DESCRIPTION.
-            capture_builder (TYPE): DESCRIPTION.
+            instance (COMobject of type IBaseFilter): Instance of the base
+                filter of the graph filter.
+            name (str) : Name of the filter.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
-        Filter.__init__(self, args[0], args[1], capture_builder)
+        Filter.__init__(self, *args, **kwargs)
 
     def get_current_format(self):
         """Get the current format.
@@ -258,40 +276,49 @@ class VideoInput(Filter):
 class AudioInput(Filter):
     """Subclass filter for audio input."""
 
-    def __init__(self, args, capture_builder):
+    def __init__(self, *args, **kwargs):
         """Initialize the audio filter.
 
         Args:
-            args (TYPE): DESCRIPTION.
-            capture_builder (TYPE): DESCRIPTION.
+            instance (COMobject of type IBaseFilter): Instance of the base
+                filter of the graph filter.
+            name (str) : Name of the filter.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
-        Filter.__init__(self, args[0], args[1], capture_builder)
+        Filter.__init__(self, *args, **kwargs)
 
 
 class VideoCompressor(Filter):
     """Subclass filter for video compressor."""
 
-    def __init__(self, args, capture_builder):
+    def __init__(self, *args, **kwargs):
         """Initialize the video compressor.
 
         Args:
-            args (TYPE): DESCRIPTION.
-            capture_builder (TYPE): DESCRIPTION.
+            instance (COMobject of type IBaseFilter): Instance of the base
+                filter of the graph filter.
+            name (str) : Name of the filter.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
-        Filter.__init__(self, args[0], args[1], capture_builder)
+        Filter.__init__(self, *args, **kwargs)
 
 
 class AudioCompressor(Filter):
     """Subclass filter for audio compressor."""
 
-    def __init__(self, args, capture_builder):
+    def __init__(self, *args, **kwargs):
         """Initialize the audio compressor.
 
         Args:
-            args (TYPE): DESCRIPTION.
-            capture_builder (TYPE): DESCRIPTION.
+            instance (COMobject of type IBaseFilter): Instance of the base
+                filter of the graph filter.
+            name (str) : Name of the filter.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
-        Filter.__init__(self, args[0], args[1], capture_builder)
+        Filter.__init__(self, *args, **kwargs)
 
 
 class Render(Filter):
@@ -301,8 +328,10 @@ class Render(Filter):
         """Initialize the render.
 
         Args:
-            instance (FilterGraph): DESCRIPTION.
-            capture_builder (TYPE): DESCRIPTION.
+            instance (COMobject of type IBaseFilter): Instance of the base
+                filter of the graph filter.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
         Filter.__init__(self, instance, "Render", capture_builder)
         try:
@@ -345,7 +374,8 @@ class SampleGrabber(Filter):
         """Initialize the sample grabber.
 
         Args:
-            capture_builder (TYPE): DESCRIPTION.
+            capture_builder (COMobject of type CaptureGraphBuilder2): Instance
+                of the capture builder of the graph filter.
         """
         Filter.__init__(self,
                         comclient.CreateObject(
@@ -469,7 +499,9 @@ class SystemDeviceEnum:
         """
         filter_enumerator = self._system_device_enum.CreateClassEnumerator(
             GUID(category_clsid), dwFlags=0)
+
         moniker, count = filter_enumerator.Next(1)
+
         i = 0
         while i != index and count > 0:
             moniker, count = filter_enumerator.Next(1)
@@ -507,40 +539,39 @@ class FilterFactory:
         Returns:
             TYPE: DESCRIPTION.
         """
+        # Shortcut to the "find index" function
+        get_index = self._system_device_enum.get_filter_by_index
+
         if filter_type == FilterType.video_input:
-            filterinfo = self._system_device_enum.get_filter_by_index(
-                DeviceCategories.VideoInputDevice, id),
-            return VideoInput(filterinfo, self._capture_builder)
+            inst, name = get_index(DeviceCategories.VideoInputDevice, id)
+            return VideoInput(inst, name, self._capture_builder)
 
         elif filter_type == FilterType.audio_input:
-            return AudioInput(
-                self._system_device_enum.get_filter_by_index(
-                    DeviceCategories.AudioInputDevice, id),
-                self._capture_builder)
+            inst, name = get_index(DeviceCategories.AudioInputDevice, id)
+            return AudioInput(inst, name, self._capture_builder)
 
         elif filter_type == FilterType.video_compressor:
-            return VideoCompressor(
-                self._system_device_enum.get_filter_by_index(
-                    DeviceCategories.VideoCompressor, id),
-                self._capture_builder)
+            inst, name = get_index(DeviceCategories.VideoCompressor, id)
+            return VideoCompressor(inst, name, self._capture_builder)
 
         elif filter_type == FilterType.audio_compressor:
-            return AudioCompressor(
-                self._system_device_enum.get_filter_by_index(
-                    DeviceCategories.AudioCompressor, id),
-                self._capture_builder)
+            inst, name = get_index(DeviceCategories.AudioCompressor, id)
+            return AudioCompressor(inst, name, self._capture_builder)
 
         elif filter_type == FilterType.render:
-            return Render(
-                comclient.CreateObject(GUID(id),
-                                       interface=qedit.IBaseFilter),
-                self._capture_builder)
+            inst = comclient.CreateObject(
+                GUID(id), interface=qedit.IBaseFilter)
+            return Render(inst, self._capture_builder)
+
         elif filter_type == FilterType.sample_grabber:
             return SampleGrabber(self._capture_builder)
+
         elif filter_type == FilterType.muxer:
             return Muxer(id, self._capture_builder)
+
         elif filter_type == FilterType.smart_tee:
             return SmartTee(self._capture_builder)
+
         else:
             raise ValueError('Cannot create filter', filter_type, id)
 
@@ -626,6 +657,12 @@ class FilterGraph:
         self._recording_format = None
         self._is_recording = False
 
+    @property
+    def is_recording(self):
+        """Get the recording state."""
+        return self._is_recording
+    # No setter for this attribute
+
     def _add_filter(self, filter_type: FilterType, filter_id: int):
         """Add a filter to the instance given the type and the id.
 
@@ -636,7 +673,7 @@ class FilterGraph:
         assert not(filter_type in self._filters)
         filter = self._filter_factory.build_filter(filter_type, filter_id)
         self._filters[filter_type] = filter
-        self._filter_graph.AddFilter(filter.instance, filter.Name)
+        self._filter_graph.AddFilter(filter.instance, filter.name)
 
     def add_video_input_device(self, index: int = 0):
         """Add the video input device at given index.
@@ -748,7 +785,7 @@ class FilterGraph:
             self._graph_builder.Connect(sgrabber.get_out(), renderer.get_in())
 
             sgrabber.initialize_after_connection()
-        self.is_recording = False
+        self._is_recording = False
 
     def _get_capture_and_preview_pins(self):
         """Get the pins for capture and preview.
@@ -826,7 +863,7 @@ class FilterGraph:
                     self._filters[FilterType.audio_compressor].get_out(),
                     self._filters[FilterType.muxer].get_in(1))
 
-        self.is_recording = True
+        self._is_recording = True
 
     def configure_render(self, handle):
         """Link the rendere to a video window.
@@ -834,6 +871,7 @@ class FilterGraph:
         Args:
             handle (TYPE): DESCRIPTION.
         """
+        assert Filter.render in self._filters
         self._filters[FilterType.render].configure_video_window(handle)
 
     def update_window(self, width: int, height: int):
@@ -943,7 +981,7 @@ class FilterGraph:
         Returns:
             int: DESCRIPTION.
         """
-        return self._filters[FilterType.video_input]
+        return self._filters.get(FilterType.video_input, None)
 
     def remove_filters(self):
         """Remove the existing filters."""
@@ -1063,15 +1101,31 @@ class SampleGrabberCallback(COMObject):
         Args:
             callback (Callable): DESCRIPTION.
         """
-        self.callback = callback
+        self._callback = callback
         self.cnt = 0
-        self.keep_photo = False
-        self.image_resolution = None
+        self._keep_photo = False
+        self._image_resolution = None
         super(SampleGrabberCallback, self).__init__()
+
+    @property
+    def image_resolution(self):
+        """Get and set the resolution of the image.
+
+        Returns:
+            Tuple: The width and height of the image.
+        """
+        return self._image_resolution
+
+    @image_resolution.setter
+    def image_resolution(self, resolution):
+        if isinstance(resolution, tuple):
+            self._image_resolution = resolution
+        else:
+            raise TypeError("Tuple expected")
 
     def grab_frame(self):
         """Indicate that the image must be kept."""
-        self.keep_photo = True
+        self._keep_photo = True
 
     def SampleCB(self, this, SampleTime, pSample):
         """Sample callback function.
@@ -1098,26 +1152,26 @@ class SampleGrabberCallback(COMObject):
         Returns:
             int: 0 if no image was grabbed, else None
         """
-        if self.keep_photo:
-            self.keep_photo = False
+        if self._keep_photo:
+            self._keep_photo = False
 
             # Convert the buffer to a numpy array
             img = np.ctypeslib.as_array(
                 pBuffer,
-                shape=(self.image_resolution[1],
-                       self.image_resolution[0], 3))
+                shape=(self._image_resolution[1],
+                       self._image_resolution[0], 3))
             img = np.flip(np.copy(img), axis=0)
-            self.callback(img)
+            self._callback(img)
         return 0
 
     # ALTERNATIVE
     # def BufferCB(self, this, SampleTime, pBuffer, BufferLen):
     #     if self.keep_photo:
     #         self.keep_photo = False
-    #         bsize = self.image_resolution[1] *self.image_resolution[0] * 3
+    #         bsize = self._image_resolution[1] *self._image_resolution[0] * 3
     #         img = pBuffer[:bsize]
-    #         img = np.reshape(img, (self.image_resolution[1],
-    #                                self.image_resolution[0], 3))
+    #         img = np.reshape(img, (self._image_resolution[1],
+    #                                self._image_resolution[0], 3))
     #         img = np.flip(img, axis=0)
     #         self.callback(img)
     #     return 0

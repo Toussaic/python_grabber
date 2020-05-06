@@ -40,7 +40,7 @@ from pygrabber.dshow_graph import FilterGraph, StateGraph
 class PyGrabber:
     """Main class for creating a media grabber."""
 
-    def __init__(self, callback: Callable):
+    def __init__(self, callback: Callable = None):
         """Initialize the grabber.
 
         Create an empty grabber with no device attached.
@@ -92,7 +92,10 @@ class PyGrabber:
                 self._.remove_all_filters_but_video_source()
                 self._recording_prepared = False
 
-            self._graph.add_sample_grabber(self.callback)
+            if self._callback:
+                self._graph.add_sample_grabber(self._callback)
+            else:
+                self._graph.add_sample_grabber(lambda x: x)
 
             if handle:
                 self._graph.add_default_render()
@@ -162,32 +165,50 @@ class PyGrabber:
 
     def set_device_properties(self):
         """Set default properties of the video input device."""
-        self._graph.get_input_device().set_properties()
+        device = self._graph.get_input_device()
+
+        if device:
+            device.set_properties()
+        else:
+            raise RuntimeWarning("No device attached")
 
     def display_format_dialog(self):
         """Open a dialog with the available formats of the video input."""
-        self._graph.get_input_device().show_format_dialog()
+        device = self._graph.get_input_device()
+
+        if device:
+            self._graph.get_input_device().show_format_dialog()
+        else:
+            raise RuntimeWarning("No device attached")
 
     def grab_frame(self):
         """Grab an image from the video input."""
         self._graph.grab_frame()
 
-    def get_status(self) -> Union[str, None]:
+    def get_status(self) -> str:
         """Get the status of the grabber.
 
         The grabber could be running, stopped or paused.
 
         Returns:
-            Union[str, NoneType]: DESCRIPTION.
+            str: A description of the state of the grabber.
         """
+        device = self._graph.get_input_device()
+
+        if not device:
+            return 'No device attached'
+
         graph_state = self._graph.get_state()
-        device_name = self._graph.get_input_device().Name
-        resolution = self._graph.get_input_device().get_current_format()
+
         if graph_state == StateGraph.Stopped:
             return "Stopped"
-        elif graph_state == StateGraph.Running:
-            return (f"{'Recording' if self.graph.is_recording else 'Playing'} "
-                    f"{device_name} [{resolution[0]}x{resolution[1]}]")
-        elif graph_state == StateGraph.Paused:
+
+        device_name = device.name
+
+        if graph_state == StateGraph.Running:
+            width, height = device.get_current_format()
+            state = 'Recording' if self._graph.is_recording else 'Playing'
+            return (f"{state} {device_name} [{width}x{height}]")
+
+        if graph_state == StateGraph.Paused:
             return f"Connected to {device_name} - paused"
-        return None
