@@ -1,53 +1,44 @@
-# -*- coding: utf-8 -*-
+#
+# python_grabber
+#
+# Authors:
+#  Andrea Schiavinato <andrea.schiavinato84@gmail.com>
+#
+# Copyright (C) 2019 Andrea Schiavinato
+#
+# Permission is hereby granted, free of charge, to any person obtaining
+# a copy of this software and associated documentation files (the
+# "Software"), to deal in the Software without restriction, including
+# without limitation the rights to use, copy, modify, merge, publish,
+# distribute, sublicense, and/or sell copies of the Software, and to
+# permit persons to whom the Software is furnished to do so, subject to
+# the following conditions:
+#
+# The above copyright notice and this permission notice shall be
+# included in all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+# EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+# MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+# NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+# LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+# OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+# WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+#
 
-"""Python grabber.
+# see https://github.com/tpn/winsdk-10/blob/master/Include/10.0.16299.0/um/axextend.idl for interface spec.
 
-Authors:
-  Andrea Schiavinato <andrea.schiavinato84@gmail.com>
-
-Copyright (C) 2019 Andrea Schiavinato
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-"Software"), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
-OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
-WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-For interface spec, see:
-https://github.com/tpn/winsdk-10/blob/master/Include/10.0.16299.0/um/axextend.idl
-"""
-
-from ctypes import (
-    c_int, c_long, c_longlong, c_uint32, c_short, Structure, POINTER)
-
-from ctypes.wintypes import LPCOLESTR
+from pygrabber.moniker import *
+from pygrabber.win_common_types import *
+from comtypes import *
+from comtypes import client
 from ctypes.wintypes import RECT, SIZE, ULONG, LPOLESTR, DWORD, LONG
-
-# from comtypes import *
-from comtypes import client, GUID, COMMETHOD, IUnknown, HRESULT, BSTR
 from comtypes.automation import IDispatch
-
-from pygrabber.moniker import IEnumMoniker
-
-# from pygrabber.win_common_types import *
-from pygrabber.win_common_types import (
-    DWORDLONG, REFERENCE_TIME, OLE_HANDLE, LONG_PTR, REFIID, WORD)
+from ctypes import c_int, c_long, c_longlong
 
 qedit = client.GetModule("qedit.dll")
 quartz = client.GetModule("quartz.dll")
+
 
 PIN_IN = 0
 PIN_OUT = 1

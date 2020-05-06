@@ -26,30 +26,14 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-from ctypes.wintypes import (SHORT, INT, ULONG, ULARGE_INTEGER,
-                             LARGE_INTEGER, LPOLESTR)
-from comtypes import IID, GUID
-from ctypes import POINTER
+from ctypes.wintypes import SHORT
+from comtypes import *
 
-"""
-REFERENCE_TIME = c_longlong  # from ctypes
-LONG_PTR = c_ulong  # from ctypes
-OLE_HANDLE = c_int  # from ctypes
-LPCOLESTR = c_wchar_p  # from ctypes
-# from https://github.com/enthought/comtypes/blob/master/comtypes/errorinfo.py
-REFIID = POINTER(GUID)  # POINTER from _ctypes, GUID from comtypes.GUID
-REFGUID = POINTER(GUID)  # POINTER from _ctypes, GUID from comtypes.GUID
-WORD = SHORT  # SHORT from wintypes = ctypes.c_short
-DWORDLONG = c_ulonglong  # from ctypes
-"""
-
-REFERENCE_TIME = LARGE_INTEGER
-LONG_PTR = ULONG
-OLE_HANDLE = INT
-# LPCOLESTR = c_wchar_p  # Redefinition of wintypes.LPCOLESTR
-# from https://github.com/enthought/comtypes/blob/master/comtypes/errorinfo.py
-REFIID = POINTER(IID)
+REFERENCE_TIME = c_longlong
+LONG_PTR = c_ulong
+OLE_HANDLE = c_int
+LPCOLESTR = c_wchar_p  # from https://github.com/enthought/comtypes/blob/master/comtypes/errorinfo.py
+REFIID = POINTER(GUID)
 REFGUID = POINTER(GUID)
-# FIXME : Inconsistency between 'wintypes' definition of WORD = USHORT
 WORD = SHORT
-DWORDLONG = ULARGE_INTEGER
+DWORDLONG = c_ulonglong

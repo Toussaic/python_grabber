@@ -26,10 +26,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-from pygrabber.win_common_types import WORD, REFGUID
-from comtypes import DWORD, POINTER, IID, GUID, COMMETHOD, HRESULT
-from comtypes import IUnknown
-from ctypes import c_wchar, c_wchar_p, windll
+from pygrabber.win_common_types import *
+from comtypes import DWORD
 from ctypes.wintypes import BOOL
 
 
@@ -38,7 +36,7 @@ LPCWSTR_WMSDK_TYPE_SAFE = POINTER(c_wchar)
 
 class IWMStreamList(IUnknown):
     _case_insensitive_ = True
-    _iid_ = IID('{96406Bdd-2b2b-11d3-b36b-00c04f6108ff}')
+    _iid_ = GUID('{96406Bdd-2b2b-11d3-b36b-00c04f6108ff}')
     _idlflags_ = []
 
 
@@ -56,7 +54,7 @@ IWMStreamList._methods_ = [
 
 class IWMMutualExclusion(IWMStreamList):
     _case_insensitive_ = True
-    _iid_ = IID('{96406Bde-2b2b-11d3-b36b-00c04f6108ff}')
+    _iid_ = GUID('{96406Bde-2b2b-11d3-b36b-00c04f6108ff}')
     _idlflags_ = []
 
 
@@ -70,7 +68,7 @@ IWMMutualExclusion._methods_ = [
 
 class IWMStreamConfig(IUnknown):
     _case_insensitive_ = True
-    _iid_ = IID('{96406Bdc-2b2b-11d3-b36b-00c04f6108ff}')
+    _iid_ = GUID('{96406Bdc-2b2b-11d3-b36b-00c04f6108ff}')
     _idlflags_ = []
 
 
@@ -113,7 +111,7 @@ IWMStreamConfig._methods_ = [
 
 class IWMProfile(IUnknown):
     _case_insensitive_ = True
-    _iid_ = IID('{96406BDB-2B2B-11D3-B36B-00C04F6108FF}')
+    _iid_ = GUID('{96406BDB-2B2B-11D3-B36B-00C04F6108FF}')
     _idlflags_ = []
 
 
@@ -182,7 +180,7 @@ IWMProfile._methods_ = [
 
 class IWMProfileManager2(IUnknown):
     _case_insensitive_ = True
-    _iid_ = IID('{d16679f2-6ca0-472d-8d31-2f5d55aee155}')
+    _iid_ = GUID('{d16679f2-6ca0-472d-8d31-2f5d55aee155}')
     _idlflags_ = []
 
 
@@ -226,7 +224,7 @@ WMCreateProfileManager.argtypes = [POINTER(POINTER(IWMProfileManager2))]
 
 class IConfigAsfWriter(IUnknown):
     _case_insensitive_ = True
-    _iid_ = IID('{45086030-F7E4-486a-B504-826BB5792A3B}')
+    _iid_ = GUID('{45086030-F7E4-486a-B504-826BB5792A3B}')
     _idlflags_ = []
 
 

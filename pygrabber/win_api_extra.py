@@ -26,7 +26,8 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
-from ctypes import POINTER, HRESULT, windll
+from ctypes import POINTER, HRESULT
+from ctypes import windll
 from ctypes.wintypes import (DWORD, ULONG, HWND,
                              UINT, LPCOLESTR, LCID, LPVOID)
 
