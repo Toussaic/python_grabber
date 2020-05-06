@@ -63,6 +63,7 @@ class PinCategory:
     Preview = "{fb6c4282-0353-11d1-905f-0000c0cc16ba}"
     Capture = "{fb6c4281-0353-11d1-905f-0000c0cc16ba}"
 
+# FIXME : Multiple definition for '{38303250-0000-0010-8000-00AA00389B71}'
 
 subtypes = {
     '{4C504C43-0000-0010-8000-00AA00389B71}': 'CLPL',
