@@ -28,6 +28,9 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 For interface spec, see:
 https://github.com/tpn/winsdk-10/blob/master/Include/10.0.16299.0/um/axextend.idl
+
+TODO : Replace the "from ... import ..." with "import ..." should be more
+    readable. Then replace in the code with ".attribute".
 """
 
 from ctypes import (
@@ -36,13 +39,11 @@ from ctypes import (
 from ctypes.wintypes import LPCOLESTR
 from ctypes.wintypes import RECT, SIZE, ULONG, LPOLESTR, DWORD, LONG
 
-# from comtypes import *
 from comtypes import client, GUID, COMMETHOD, IUnknown, HRESULT, BSTR
 from comtypes.automation import IDispatch
 
 from pygrabber.moniker import IEnumMoniker
 
-# from pygrabber.win_common_types import *
 from pygrabber.win_common_types import (
     DWORDLONG, REFERENCE_TIME, OLE_HANDLE, LONG_PTR, REFIID, WORD)
 

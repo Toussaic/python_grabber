@@ -25,10 +25,13 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIMDAMAGES OR OTHER LIABILITYWHETHER IN AN ACTION
 OF CONTRACTTORT OR OTHERWISEARISING FROMOUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+TODO : Replace the "from ... import ..." with "import ..." should be more
+    readable. Then replace in the code with ".attribute".
 """
 
 from ctypes.wintypes import (SHORT, INT, ULONG, ULARGE_INTEGER,
-                             LARGE_INTEGER, LPOLESTR)
+                             LARGE_INTEGER)
 from comtypes import IID, GUID
 from ctypes import POINTER
 

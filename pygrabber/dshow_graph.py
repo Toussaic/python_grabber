@@ -25,6 +25,9 @@ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
 LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+TODO : Replace the "from ... import ..." with "import ..." should be more
+    readable. Then replace in the code with ".attribute".
 """
 
 from typing import List, Tuple, Callable
@@ -32,33 +35,26 @@ import numpy as np
 from pathlib import Path
 from enum import Enum
 
-# from ctypes import *
 from ctypes import (wstring_at, cast, POINTER, pointer, windll, byref,
                     create_unicode_buffer)
 
-# from ctypes.wintypes import *
 from ctypes.wintypes import DWORD
 
-# from comtypes import *
 from comtypes import COMError, GUID, COMObject
 
 import comtypes.client as comclient
 from comtypes.persist import IPropertyBag
 
-# from pygrabber.dshow_core import *
 from pygrabber.dshow_core import (
     IAMStreamConfig, IVideoWindow, VIDEOINFOHEADER, ISpecifyPropertyPages,
     ISampleGrabber, qedit, quartz, ICreateDevEnum, ICaptureGraphBuilder2,
     PIN_OUT)
 
-# from pygrabber.windows_media import *
 from pygrabber.windows_media import IWMProfileManager2, WMCreateProfileManager
 
-# from pygrabber.dshow_ids import *
 from pygrabber.dshow_ids import (subtypes, clsids, MediaTypes, MediaSubtypes,
                                  DeviceCategories, PinCategory)
 
-# from pygrabber.win_api_extra import *
 from pygrabber.win_api_extra import (OleCreatePropertyFrame, LPUNKNOWN,
                                      WS_CHILD, WS_CLIPSIBLINGS)
 
@@ -114,16 +110,19 @@ class Filter:
 
     @property
     def instance(self):
+        """Get the current instance holdongg this filter."""
         return self._instance
     # No setter for this attribute
 
     @property
     def name(self):
+        """Get the name of the filter."""
         return self._name
     # No setter for this attribute
 
     @property
     def out_pins(self):
+        """Get the out pins."""
         return self._out_pins
     # No setter for this attribute
 
