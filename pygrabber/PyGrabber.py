@@ -32,7 +32,7 @@ __author__ = "Andrea Schiavinato"
 __all__ = ["PyGrabber"]
 
 from pathlib import Path
-from typing import List, Callable, Union
+from typing import List, Callable
 
 from pygrabber.dshow_graph import FilterGraph, StateGraph
 
@@ -126,10 +126,6 @@ class PyGrabber:
                 compressor to use. Defaults to None.
             handle (int, optional): Handle of video renderer to use. Defaults
                 to None.
-
-        Returns:
-            None.
-
         """
         self._graph.stop()
         self._preview_graph_prepared = False

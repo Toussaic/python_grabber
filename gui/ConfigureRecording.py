@@ -27,139 +27,260 @@ OF CONTRACTTORT OR OTHERWISEARISING FROMOUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from tkinter import *
+from typing import TypeVar, List, Tuple, AnyStr
+
+from pathlib import Path
+import tkinter as tk
 from tkinter import ttk
-from tkinter import filedialog
-import os
+
+ListOfStr = TypeVar('ListOfStr', List[AnyStr], Tuple[AnyStr])
 
 
 class ConfigureRecording:
-    def __init__(self, parent, audio_devices, video_compressors, audio_compressors, asf_profiles):
+    """An holder for all information about the file to save the video to."""
 
-        self.filename = StringVar()
-        self.filetype = StringVar()
-        self.filetype.set(".avi")
-        self.audio_device_index = None
-        self.video_compressor_index = None
-        self.audio_compressor_index = None
-        self.asf_profile = None
-        self.result = None
+    def __init__(self,
+                 parent: tk.Widget,
+                 audio_devices: ListOfStr,
+                 video_compressors: ListOfStr,
+                 audio_compressors: ListOfStr,
+                 asf_profiles: ListOfStr):
+        """Create an holder for all information about the file to save to.
 
-        top = self.top = Toplevel(parent)
-        top.attributes("-toolwindow", 1)
-        top.attributes("-topmost", 1)
-        top.geometry("500x290")
-        top.resizable(False, False)
+        Args:
+            parent (tk.Widget): The parent widget.
+            audio_devices (ListOfStr): List of available audio devices.
+            video_compressors (ListOfStr): List of available video compressors.
+            audio_compressors (ListOfStr): List of available audio compressors.
+            asf_profiles (ListOfStr): List of available asf profiles.
+        """
+        # Definitions for the filename
+        self._filename = tk.StringVar()
+        self._filetype = tk.StringVar()
+        self._filetype.set(".avi")
 
-        self.lbl_title = Label(top, text='Choose recording options:')
-        self.lbl_title.pack(side=TOP, padx=5, pady=5)
+        # Index of selected devices in the combobox
+        self._audio_device_index = None
+        self._video_compressor_index = None
+        self._audio_compressor_index = None
+        self._asf_profile = None
+        self._result = None
 
-        self.content = Frame(top)
-        self.content.pack(side=TOP)
+        self.top = tk.Toplevel(parent)
+        self.top.attributes("-toolwindow", 1)
+        self.top.attributes("-topmost", 1)
+        self.top.geometry("500x290")
+        self.top.resizable(False, False)
 
-        self.lbl_message = Label(top, text='* Valid ony for AVI, ** valid only for WMV')
-        self.lbl_message.pack(side=TOP, padx=5, pady=5)
+        self.lbl_title = tk.Label(self.top, text='Choose recording options:')
+        self.lbl_title.pack(side=tk.TOP, padx=5, pady=5)
 
-        self.commands = Frame(top)
-        self.commands.pack(side=BOTTOM)
-        self.commands.columnconfigure(0, weight=1)
-        self.commands.columnconfigure(1, weight=1)
+        content = tk.Frame(self.top)
+        content.pack(side=tk.TOP)
+
+        lbl_message = tk.Label(self.top,
+                               text='* Valid only for AVI, '
+                                    '** valid only for WMV')
+        lbl_message.pack(side=tk.TOP, padx=5, pady=5)
+
+        commands = tk.Frame(self.top)
+        commands.pack(side=tk.BOTTOM)
+        commands.columnconfigure(0, weight=1)
+        commands.columnconfigure(1, weight=1)
 
         tblen1 = 43
         tblen2 = 50
 
-        self.lbl1 = Label(self.content, text='File name:')
-        self.lbl1.grid(row=0, column=0, padx=5, pady=5, sticky=W)
+        lbl1 = tk.Label(content, text='File name:')
+        lbl1.grid(row=0, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.input_file = Entry(master=self.content, width=tblen1,  takefocus=0, textvariable=self.filename)
-        self.input_file.grid(row=0, column=1, padx=5, pady=5, sticky=W)
+        input_file = tk.Entry(master=content,
+                              width=tblen1,
+                              takefocus=0,
+                              textvariable=self._filename)
+        input_file.grid(row=0, column=1, padx=5, pady=5, sticky=tk.W)
 
-        self.btn_browse = Button(master=self.content, text="Browse", command=self.ask_file_name)
-        self.btn_browse.grid(row=0, column=2, padx=5, pady=5)
+        btn_browse = tk.Button(master=content,
+                               text="Browse",
+                               command=self.ask_file_name)
+        btn_browse.grid(row=0, column=2, padx=5, pady=5)
 
-        self.lbl2 = Label(self.content, text='File type:')
-        self.lbl2.grid(row=1, column=0, padx=5, pady=5, sticky=W)
+        lbl2 = tk.Label(content, text='File type:')
+        lbl2.grid(row=1, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.frame_ftype = Frame(self.content)
-        self.frame_ftype.grid(row=1, column=1, padx=5, pady=5, sticky=W)
-        Radiobutton(self.frame_ftype, text="AVI", variable=self.filetype, value=".avi", command=self.fix_extension).pack(side=LEFT)
-        Radiobutton(self.frame_ftype, text="WMV", variable=self.filetype, value=".wmv", command=self.fix_extension).pack(side=LEFT)
+        frame_ftype = tk.Frame(content)
+        frame_ftype.grid(row=1, column=1, padx=5, pady=5, sticky=tk.W)
 
-        self.lbl3 = Label(self.content, text='Audio device:')
-        self.lbl3.grid(row=2, column=0, padx=5, pady=5, sticky=W)
+        tk.Radiobutton(frame_ftype,
+                       text="AVI",
+                       variable=self._filetype,
+                       value=".avi",
+                       command=self._fix_extension).pack(side=tk.LEFT)
+        tk.Radiobutton(frame_ftype,
+                       text="WMV",
+                       variable=self._filetype,
+                       value=".wmv",
+                       command=self._fix_extension).pack(side=tk.LEFT)
 
-        self.input_audio_device = ttk.Combobox(master=self.content, width=tblen2, values=audio_devices, state='readonly')
-        self.input_audio_device.grid(row=2, column=1, padx=5, pady=5, sticky=W, columnspan=2)
+        # Creation of the different combobox and their labels
+        lbl3 = tk.Label(content, text='Audio device:')
+        lbl3.grid(row=2, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.lbl4 = Label(self.content, text='Video compressor (*):')
-        self.lbl4.grid(row=3, column=0, padx=5, pady=5, sticky=W)
+        self._input_audio_device = ttk.Combobox(master=content,
+                                                width=tblen2,
+                                                values=audio_devices,
+                                                state='readonly')
+        self._input_audio_device.grid(row=2, column=1,
+                                      padx=5, pady=5,
+                                      sticky=tk.W,
+                                      columnspan=2)
 
-        self.input_video_compressor = ttk.Combobox(master=self.content, width=tblen2, values=video_compressors, state='readonly')
-        self.input_video_compressor.grid(row=3, column=1, padx=5, pady=5, sticky=W, columnspan=2)
+        lbl4 = tk.Label(content, text='Video compressor (*):')
+        lbl4.grid(row=3, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.lbl5 = Label(self.content, text='Audio compressor (*):')
-        self.lbl5.grid(row=4, column=0, padx=5, pady=5, sticky=W)
+        self._input_video_compressor = ttk.Combobox(master=content,
+                                                    width=tblen2,
+                                                    values=video_compressors,
+                                                    state='readonly')
+        self._input_video_compressor.grid(row=3, column=1,
+                                          padx=5, pady=5,
+                                          sticky=tk.W,
+                                          columnspan=2)
 
-        self.input_audio_compressor = ttk.Combobox(master=self.content, width=tblen2, values=audio_compressors, state='readonly')
-        self.input_audio_compressor.grid(row=4, column=1, padx=5, pady=5, sticky=W, columnspan=2)
+        lbl5 = tk.Label(content, text='Audio compressor (*):')
+        lbl5.grid(row=4, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.lbl6 = Label(self.content, text='Windows Media profile (**):')
-        self.lbl6.grid(row=5, column=0, padx=5, pady=5, sticky=W)
+        self._input_audio_compressor = ttk.Combobox(master=content,
+                                                    width=tblen2,
+                                                    values=audio_compressors,
+                                                    state='readonly')
+        self._input_audio_compressor.grid(row=4, column=1,
+                                          padx=5, pady=5,
+                                          sticky=tk.W,
+                                          columnspan=2)
 
-        self.input_asf_profile = ttk.Combobox(master=self.content, width=tblen2, values=asf_profiles, state='readonly')
-        self.input_asf_profile.grid(row=5, column=1, padx=5, pady=5, sticky=W, columnspan=2)
+        lbl6 = tk.Label(content, text='Windows Media profile (**):')
+        lbl6.grid(row=5, column=0, padx=5, pady=5, sticky=tk.W)
 
-        self.submitButton = Button(self.commands, text='Ok', width=10, command=self.send)
-        self.submitButton.grid(row=0, column=0, padx=5, pady=5)
+        self._input_asf_profile = ttk.Combobox(master=content,
+                                               width=tblen2,
+                                               values=asf_profiles,
+                                               state='readonly')
+        self._input_asf_profile.grid(row=5, column=1,
+                                     padx=5, pady=5,
+                                     sticky=tk.W,
+                                     columnspan=2)
 
-        self.cancelButton = Button(self.commands, text='Cancel', width=10, command=self.cancel)
-        self.cancelButton.grid(row=0, column=1, padx=5, pady=5)
+        submitButton = tk.Button(commands,
+                                 text='Ok',
+                                 width=10,
+                                 command=self.send)
+        submitButton.grid(row=0, column=0, padx=5, pady=5)
+
+        cancelButton = tk.Button(commands,
+                                 text='Cancel',
+                                 width=10,
+                                 command=self.cancel)
+        cancelButton.grid(row=0, column=1, padx=5, pady=5)
+
+    @property
+    def result(self):
+        """Get the result of the dialog."""
+        return self._result
+    # No setter for the property
 
     def ask_file_name(self):
-        #self.top.withdraw()
+        """Open the dialog for asking the filename."""
+        # self.top.withdraw()
         self.top.attributes("-topmost", 0)
-        filename = filedialog.asksaveasfilename(
-            initialdir="/",
+        filename = Path(tk.filedialog.asksaveasfilename(
+            initialdir=".",
             title="Select file",
-            filetypes=[('AVI', ".avi"), ('WMV', ".wmv")])
-        #self.top.deiconify()
-        self.top.attributes("-topmost", 1)
-        if filename is not None:
-            filename, file_extension = os.path.splitext(filename)
-            if file_extension is not None and file_extension != "":
-                self.filetype.set(file_extension)
-            self.filename.set(filename)
-            self.fix_extension()
+            filetypes=[('AVI', ".avi"), ('WMV', ".wmv")]))
 
-    def fix_extension(self):
-        filename, file_extension = os.path.splitext(self.filename.get())
-        self.filename.set(filename + self.filetype.get())
+        # self.top.deiconify()
+        self.top.attributes("-topmost", 1)
+
+        if filename:
+            filename, file_extension = str(filename), filename.suffix
+
+            if file_extension in (".avi", ".wmv"):
+                self._filetype.set(file_extension)
+
+            print(filename, file_extension)
+
+            self._filename.set(filename + file_extension)
+            self._fix_extension()
+
+    def _fix_extension(self):
+        """Change the extension of the path."""
+        path = Path(self._filename.get())
+        path = path.with_suffix(self._filetype.get())
+        self._filename.set(str(path))
 
     def send(self):
-        self.audio_device_index = self.input_audio_device.current() if self.input_audio_device.current() >= 0 else None
-        self.video_compressor_index = self.input_video_compressor.current() \
-            if self.input_video_compressor.current() >= 0 else None
-        self.audio_compressor_index = self.input_audio_compressor.current() \
-            if self.input_audio_compressor.current() >= 0 else None
-        self.asf_profile = self.input_asf_profile.current()
+        """Save the different indexes and close the dialog."""
+        self._audio_device_index = (
+            self._input_audio_device.current()
+            if self._input_audio_device.current() >= 0
+            else None)
+
+        self._video_compressor_index = (
+            self._input_video_compressor.current()
+            if self._input_video_compressor.current() >= 0
+            else None)
+
+        self._audio_compressor_index = (
+            self._input_audio_compressor.current()
+            if self._input_audio_compressor.current() >= 0
+            else None)
+
+        self._asf_profile = self._input_asf_profile.current()
+
         self.top.destroy()
-        self.result = True
+        self._result = True
 
     def cancel(self):
+        """Close and cancel the dialog."""
         self.top.destroy()
-        self.result = False
+        self._result = False
 
-    def get_audio_device_index(self):
-        return self.audio_device_index
+    def get_audio_device_index(self) -> int:
+        """Get the current audio device index.
 
-    def get_video_compressor_index(self):
-        return self.video_compressor_index
+        Returns:
+            int: Index of the audio device.
+        """
+        return self._audio_device_index
 
-    def get_audio_compressor_index(self):
-        return self.audio_compressor_index
+    def get_video_compressor_index(self) -> int:
+        """Get the current video compressor index.
 
-    def get_filename(self):
-        return self.filename.get()
+        Returns:
+            int: Index of the video compressor.
+        """
+        return self._video_compressor_index
 
-    def get_asf_profile(self):
-        return self.input_asf_profile_index
+    def get_audio_compressor_index(self) -> int:
+        """Get the current audio compressor index.
+
+        Returns:
+            int : Index of the audio compressor.
+        """
+        return self._audio_compressor_index
+
+    def get_filename(self) -> str:
+        """Get the name of the file.
+
+        Returns:
+            str: The name of the file.
+        """
+        return self._filename.get()
+
+    def get_asf_profile(self) -> int:
+        """Get the index of the current asf profile.
+
+        Returns:
+            int: Index of the asf profile.
+        """
+        return self._asf_profile

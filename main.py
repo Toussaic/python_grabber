@@ -27,10 +27,11 @@ OF CONTRACTTORT OR OTHERWISEARISING FROMOUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 """
 
-from gui.MainWindow import *
+from tkinter import Tk
+
+from gui.MainWindow import MainWindow
 
 
 root = Tk()
 my_gui = MainWindow(root)
 root.mainloop()
-

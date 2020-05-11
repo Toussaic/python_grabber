@@ -479,12 +479,17 @@ class SystemDeviceEnum:
         filter_enumerator = self._system_device_enum.CreateClassEnumerator(
             GUID(category_clsid), dwFlags=0)
 
-        moniker, count = filter_enumerator.Next(1)
-
         result = []
-        while count > 0:
-            result.append(get_moniker_name(moniker))
+
+        try:
             moniker, count = filter_enumerator.Next(1)
+
+            while count > 0:
+                result.append(get_moniker_name(moniker))
+                moniker, count = filter_enumerator.Next(1)
+        except ValueError:
+            count = -1
+
         return result
 
     def get_filter_by_index(self, category_clsid, index):
@@ -871,7 +876,7 @@ class FilterGraph:
         Args:
             handle (TYPE): DESCRIPTION.
         """
-        assert Filter.render in self._filters
+        assert FilterType.render in self._filters
         self._filters[FilterType.render].configure_video_window(handle)
 
     def update_window(self, width: int, height: int):
@@ -1196,6 +1201,10 @@ def show_properties(object):
 
     Args:
         object (TYPE): The object to display the properties.
+
+    TODO:
+        Generate an OSError: [WinError -2147467259] when called in the gui
+            example
     """
     try:
         spec_pages = object.QueryInterface(ISpecifyPropertyPages)
